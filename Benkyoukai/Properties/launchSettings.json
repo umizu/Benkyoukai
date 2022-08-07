@@ -12,9 +12,8 @@
     "Benkyoukai": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7031;http://localhost:5124",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:7777",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

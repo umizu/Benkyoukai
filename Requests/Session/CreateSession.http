@@ -1,0 +1,13 @@
+POST http://localhost:7777/sessions
+Content-Type: application/json
+
+{
+    "name": "jlpt n4",
+    "description": "grammar & vocab",
+    "startDateTime": "2022-08-07T20:00:00",
+    "endDateTime": "2022-08-07T21:00:00",
+    "tags": [
+        "japanese",
+        "jlpt"
+    ]
+}
