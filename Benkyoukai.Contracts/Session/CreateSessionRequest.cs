@@ -4,6 +4,5 @@ public record CreateSessionRequest(
     string Name,
     string Description,
     DateTime StartDateTime,
-    DateTime EndDateTime,
-    List<string> Tags
+    DateTime EndDateTime
 );
