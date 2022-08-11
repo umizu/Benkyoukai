@@ -4,7 +4,8 @@ using Benkyoukai.Services.Sessions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>()
+builder.Services.AddSingleton<IDbConnectionFactory>(_ => new SqliteConnectionFactory(
+    builder.Configuration.GetValue<string>("Database:ConnectionString")))
     .AddSingleton<DatabaseInitializer>()
     .AddSingleton<ISessionService, SessionService>();
 
