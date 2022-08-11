@@ -1,5 +1,6 @@
 using Benkyoukai.Data;
 using Benkyoukai.Models;
+using Dapper;
 
 namespace Benkyoukai.Services.Sessions;
 
@@ -12,8 +13,13 @@ public class SessionService : ISessionService
         _connectionFactory = connectionFactory;
     }
 
-    public Task<bool> CreateSessionAsync(Session session)
+    public async Task<bool> CreateSessionAsync(Session session)
     {
-        return Task.FromResult(true);
+        using var connection = await _connectionFactory.CreateConnectionAsync();
+        
+        var result = await connection.ExecuteAsync(
+            @"INSERT INTO Sessions (Id, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
+
+        return result > 0;
     }
 }
