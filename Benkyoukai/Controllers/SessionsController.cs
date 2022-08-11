@@ -21,6 +21,7 @@ public class SessionsController : ControllerBase
     {
         var session = new Session
         {
+            Id = Guid.NewGuid(),
             Name = request.Name,
             Description = request.Description,
             StartDateTime = request.StartDateTime,
@@ -28,8 +29,9 @@ public class SessionsController : ControllerBase
             LastModifiedDateTime = DateTime.UtcNow
         };
 
-    // todo: save to database
-    await _sessionService.CreateSessionAsync(session);
+        var created = await _sessionService.CreateSessionAsync(session);
+        if (!created)
+            return BadRequest();
 
         var response = new SessionResponse(
             session.Id,
@@ -41,26 +43,25 @@ public class SessionsController : ControllerBase
 
         return CreatedAtAction(
             actionName: nameof(GetSession),
-            routeValues: new { id = session.Id
-},
+            routeValues: new { id = session.Id },
             value: response);
     }
 
     [HttpGet("{id:guid}")]
-public IActionResult GetSession(Guid id)
-{
-    return Ok(id);
-}
+    public IActionResult GetSession(Guid id)
+    {
+        return Ok(id);
+    }
 
-[HttpPut("{id:guid}")]
-public IActionResult UpsertSession(Guid id, UpsertSessionRequest request)
-{
-    return Ok(request);
-}
+    [HttpPut("{id:guid}")]
+    public IActionResult UpsertSession(Guid id, UpsertSessionRequest request)
+    {
+        return Ok(request);
+    }
 
-[HttpDelete("{id:guid}")]
-public IActionResult DeleteSession(Guid id)
-{
-    return Ok(id);
-}
+    [HttpDelete("{id:guid}")]
+    public IActionResult DeleteSession(Guid id)
+    {
+        return Ok(id);
+    }
 }
