@@ -17,7 +17,7 @@ public class SessionsController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateSession(CreateSessionRequest request)
+    public async Task<IActionResult> CreateSession(CreateSessionRequest request)
     {
         var session = new Session
         {
@@ -29,7 +29,7 @@ public class SessionsController : ControllerBase
         };
 
     // todo: save to database
-    _sessionService.CreateSession(session);
+    await _sessionService.CreateSessionAsync(session);
 
         var response = new SessionResponse(
             session.Id,
