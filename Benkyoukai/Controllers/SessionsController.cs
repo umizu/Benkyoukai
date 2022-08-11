@@ -19,16 +19,17 @@ public class SessionsController : ControllerBase
     [HttpPost]
     public IActionResult CreateSession(CreateSessionRequest request)
     {
-        var session = new Session(
-            Guid.NewGuid(),
-            request.Name,
-            request.Description,
-            request.StartDateTime,
-            request.EndDateTime,
-            DateTime.UtcNow);
+        var session = new Session
+        {
+            Name = request.Name,
+            Description = request.Description,
+            StartDateTime = request.StartDateTime,
+            EndDateTime = request.EndDateTime,
+            LastModifiedDateTime = DateTime.UtcNow
+        };
 
-        // todo: save to database
-        _sessionService.CreateSession(session);
+    // todo: save to database
+    _sessionService.CreateSession(session);
 
         var response = new SessionResponse(
             session.Id,
@@ -40,25 +41,26 @@ public class SessionsController : ControllerBase
 
         return CreatedAtAction(
             actionName: nameof(GetSession),
-            routeValues: new { id = session.Id },
+            routeValues: new { id = session.Id
+},
             value: response);
     }
 
     [HttpGet("{id:guid}")]
-    public IActionResult GetSession(Guid id)
-    {
-        return Ok(id);
-    }
+public IActionResult GetSession(Guid id)
+{
+    return Ok(id);
+}
 
-    [HttpPut("{id:guid}")]
-    public IActionResult UpsertSession(Guid id, UpsertSessionRequest request)
-    {
-        return Ok(request);
-    }
+[HttpPut("{id:guid}")]
+public IActionResult UpsertSession(Guid id, UpsertSessionRequest request)
+{
+    return Ok(request);
+}
 
-    [HttpDelete("{id:guid}")]
-    public IActionResult DeleteSession(Guid id)
-    {
-        return Ok(id);
-    }
+[HttpDelete("{id:guid}")]
+public IActionResult DeleteSession(Guid id)
+{
+    return Ok(id);
+}
 }

@@ -4,5 +4,5 @@ namespace Benkyoukai.Services.Sessions;
 
 public interface ISessionService
 {
-    void CreateSession(Session session);
+    Task<bool> CreateSessionAsync(Session session);
 }
