@@ -16,9 +16,9 @@ public class SessionService : ISessionService
     public async Task<bool> CreateSessionAsync(Session session)
     {
         using var connection = await _connectionFactory.CreateConnectionAsync();
-        
+
         var result = await connection.ExecuteAsync(
-            @"INSERT INTO Sessions (Id, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
+            @"INSERT INTO Session (Id, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
 
         return result > 0;
     }

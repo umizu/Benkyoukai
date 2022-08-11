@@ -22,6 +22,6 @@ public class DatabaseInitializer
                 Description TEXT,
                 StartDateTime TEXT NOT NULL,
                 EndDateTime TEXT NOT NULL,
-                LastDateModified TEXT NOT NULL)");
+                LastModifiedDateTime TEXT NOT NULL)");
     }
 }
