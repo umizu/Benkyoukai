@@ -13,11 +13,7 @@ POST /sessions
     "name": "jlpt n4",
     "description": "grammar & vocab",
     "startDateTime": "2022-08-07T20:00:00",
-    "endDateTime": "2022-08-07T21:00:00",
-    "tags": [
-        "japanese",
-        "jlpt"
-    ]
+    "endDateTime": "2022-08-07T21:00:00"
 }
 ```
 
@@ -38,11 +34,7 @@ Location: {{host}}/Sessions/{{id}}
     "description": "grammar & vocab",
     "startDateTime": "2022-08-07T20:00:00",
     "endDateTime": "2022-08-07T21:00:00",
-    "lastModifiedDateTime": "2022-08-05T12:00:00",  
-    "tags": [
-        "japanese",
-        "jlpt"
-    ]
+    "lastModifiedDateTime": "2022-08-05T12:00:00"
 }
 ```
 
@@ -67,10 +59,6 @@ GET /Sessions/{{id}}
     "description": "grammar & vocab",
     "startDateTime": "2022-08-07T20:00:00",
     "endDateTime": "2022-08-07T21:00:00",
-    "lastModifiedDateTime": "2022-08-05T12:00:00",  
-    "tags": [
-        "japanese",
-        "jlpt"
-    ]
+    "lastModifiedDateTime": "2022-08-05T12:00:00"
 }
 ```
