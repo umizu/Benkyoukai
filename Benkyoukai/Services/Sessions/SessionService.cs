@@ -18,8 +18,16 @@ public class SessionService : ISessionService
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
         var result = await connection.ExecuteAsync(
-            @"INSERT INTO Session (Id, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
+            @"INSERT INTO Session (Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
 
         return result > 0;
+    }
+
+    public async Task<Session?> GetSessionAsync(int id)
+    {
+        using var connection = await _connectionFactory.CreateConnectionAsync();
+
+        return await connection.QueryFirstOrDefaultAsync<Session>(
+            @"SELECT * FROM Session WHERE Id = @Id", new { Id = id });
     }
 }

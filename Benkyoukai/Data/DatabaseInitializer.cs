@@ -16,12 +16,12 @@ public class DatabaseInitializer
         using var connection = await _connectionFactory.CreateConnectionAsync();
         
         await connection.ExecuteAsync(@"
-            CREATE TABLE IF NOT EXISTS Session(
-                Id TEXT PRIMARY KEY,
-                Name TEXT NOT NULL,
-                Description TEXT,
-                StartDateTime TEXT NOT NULL,
-                EndDateTime TEXT NOT NULL,
-                LastModifiedDateTime TEXT NOT NULL)");
+            CREATE TABLE IF NOT EXISTS Session (
+                Id SERIAL PRIMARY KEY,
+                Name VARCHAR NOT NULL,
+                Description VARCHAR NOT NULL,
+                StartDateTime TIMESTAMP NOT NULL,
+                EndDateTime TIMESTAMP NOT NULL,
+                LastModifiedDateTime TIMESTAMP NOT NULL)");
     }
 }

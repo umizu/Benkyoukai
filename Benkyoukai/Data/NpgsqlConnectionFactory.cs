@@ -1,20 +1,20 @@
 using System.Data;
-using Microsoft.Data.Sqlite;
+using Npgsql;
 
 namespace Benkyoukai.Data;
 
-public class SqliteConnectionFactory : IDbConnectionFactory
+public class NpgsqlConnectionFactory : IDbConnectionFactory
 {
     private readonly string _connectionString;
 
-    public SqliteConnectionFactory(string connectionString)
+    public NpgsqlConnectionFactory(string connectionString)
     {
         _connectionString = connectionString;
     }
 
     public async Task<IDbConnection> CreateConnectionAsync()
     {
-        var connection = new SqliteConnection(_connectionString);
+        var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
         return connection;
     }

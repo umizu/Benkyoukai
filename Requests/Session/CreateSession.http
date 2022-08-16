@@ -2,7 +2,7 @@ POST http://localhost:7777/sessions
 Content-Type: application/json
 
 {
-    "name": "test name",
+    "name": "test2",
     "description": "test desc",
     "startDateTime": "2022-05-06T18:00:00",
     "endDateTime": "2022-05-06T21:00:00"
