@@ -21,6 +21,7 @@ public class SessionsController : ControllerBase
     {
         var session = new Session
         {
+            Id = Guid.NewGuid(),
             Name = request.Name,
             Description = request.Description,
             StartDateTime = request.StartDateTime,
@@ -32,11 +33,19 @@ public class SessionsController : ControllerBase
         if (!created)
             return BadRequest();
 
-        return Ok();
+        var response = new SessionResponse(
+            session.Id, 
+            session.Name, 
+            session.Description, 
+            session.StartDateTime, 
+            session.EndDateTime, 
+            session.LastModifiedDateTime);
+
+        return Ok(response);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetSession(int id)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetSession(Guid id)
     {
         var session = await _sessionService.GetSessionAsync(id);
         if (session is null)

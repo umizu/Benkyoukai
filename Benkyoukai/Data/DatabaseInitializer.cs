@@ -17,7 +17,7 @@ public class DatabaseInitializer
         
         await connection.ExecuteAsync(@"
             CREATE TABLE IF NOT EXISTS Session (
-                Id SERIAL PRIMARY KEY,
+                Id UUID PRIMARY KEY,
                 Name VARCHAR NOT NULL,
                 Description VARCHAR NOT NULL,
                 StartDateTime TIMESTAMP NOT NULL,

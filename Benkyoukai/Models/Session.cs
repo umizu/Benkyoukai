@@ -2,7 +2,7 @@ namespace Benkyoukai.Models;
 
 public class Session
 {
-    public int Id { get; init; }
+    public Guid Id { get; init; } = Guid.NewGuid();
     public string Name { get; set; } = default!;
     public string Description { get; set; } = default!;
     public DateTime StartDateTime { get; set; }

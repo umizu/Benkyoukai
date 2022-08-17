@@ -1,7 +1,7 @@
 namespace Benkyoukai.Contracts.Session;
 
 public record SessionResponse(
-    int Id,
+    Guid Id,
     string Name,
     string Description,
     DateTime StartDateTime,
