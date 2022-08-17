@@ -1,4 +1,5 @@
 using Benkyoukai.Contracts.Session;
+using Benkyoukai.Mappers;
 using Benkyoukai.Models;
 using Benkyoukai.Services.Sessions;
 using Microsoft.AspNetCore.Mvc;
@@ -33,15 +34,10 @@ public class SessionsController : ControllerBase
         if (!created)
             return BadRequest();
 
-        var response = new SessionResponse(
-            session.Id, 
-            session.Name, 
-            session.Description, 
-            session.StartDateTime, 
-            session.EndDateTime, 
-            session.LastModifiedDateTime);
-
-        return Ok(response);
+        return CreatedAtAction(
+            nameof(GetSession),
+            new { id = session.Id },
+            session.AsDto());
     }
 
     [HttpGet("{id:guid}")]
@@ -51,7 +47,7 @@ public class SessionsController : ControllerBase
         if (session is null)
             return NotFound();
 
-        return Ok(session);
+        return Ok(session.AsDto());
     }
 
     [HttpPut("{id:guid}")]
