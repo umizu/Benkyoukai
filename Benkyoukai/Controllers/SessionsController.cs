@@ -51,14 +51,27 @@ public class SessionsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public IActionResult UpsertSession(Guid id, UpsertSessionRequest request)
+    public async Task<IActionResult> UpsertSession(Guid id, UpsertSessionRequest request)
     {
-        return Ok(request);
+        var session = new Session
+        {
+            Id = id,
+            Name = request.Name,
+            Description = request.Description,
+            StartDateTime = request.StartDateTime,
+            EndDateTime = request.EndDateTime,
+            LastModifiedDateTime = DateTime.UtcNow
+        };
+
+        await _sessionService.UpsertSessionAsync(session);
+        return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
-    public IActionResult DeleteSession(Guid id)
+    public async Task<IActionResult> DeleteSession(Guid id)
     {
-        return Ok(id);
+        if (!await _sessionService.DeleteSessionAsync(id))
+            return NotFound();
+        return NoContent();
     }
 }

@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer()
 
 var app = builder.Build();
 
+app.UseExceptionHandler("/error");
 app.MapControllers();
 app.UseSwagger();
 app.UseSwaggerUI();

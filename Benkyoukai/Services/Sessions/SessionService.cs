@@ -23,11 +23,25 @@ public class SessionService : ISessionService
         return result > 0;
     }
 
+    public async Task<bool> DeleteSessionAsync(Guid id)
+    {
+        using var connection = await _connectionFactory.CreateConnectionAsync();
+        var result = await connection.ExecuteAsync(
+            @"DELETE FROM Session WHERE Id = @Id",
+            new { Id = id });
+        return result > 0;
+    }
+
     public async Task<Session?> GetSessionAsync(Guid id)
     {
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
         return await connection.QueryFirstOrDefaultAsync<Session>(
             @"SELECT * FROM Session WHERE Id = @Id", new { Id = id });
+    }
+
+    public Task<bool> UpsertSessionAsync(Session session)
+    {
+        throw new NotImplementedException();
     }
 }
