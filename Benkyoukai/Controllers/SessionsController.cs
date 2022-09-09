@@ -1,14 +1,14 @@
 using Benkyoukai.Contracts.Session;
 using Benkyoukai.Mappers;
 using Benkyoukai.Models;
+using Benkyoukai.ServiceErrors;
 using Benkyoukai.Services.Sessions;
+using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Benkyoukai.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class SessionsController : ControllerBase
+public class SessionsController : ApiController
 {
     private readonly ISessionService _sessionService;
 
@@ -43,11 +43,12 @@ public class SessionsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetSession(Guid id)
     {
-        var session = await _sessionService.GetSessionAsync(id);
-        if (session is null)
-            return NotFound();
+        var getSessionResult = await _sessionService.GetSessionAsync(id);
 
-        return Ok(session.AsDto());
+        return getSessionResult.Match(
+            session => Ok(session.AsDto()),
+            errors => Problem(errors)
+        );
     }
 
     [HttpPut("{id:guid}")]
