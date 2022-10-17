@@ -1,5 +1,5 @@
-using Benkyoukai.Data;
-using Benkyoukai.Services.Sessions;
+using Benkyoukai.Api.Data;
+using Benkyoukai.Api.Services.Sessions;
 
 var builder = WebApplication.CreateBuilder(args);
 

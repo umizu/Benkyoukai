@@ -1,4 +1,4 @@
-namespace Benkyoukai.Models;
+namespace Benkyoukai.Api.Models;
 
 public class Session
 {

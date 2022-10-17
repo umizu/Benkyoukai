@@ -1,7 +1,7 @@
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Benkyoukai.Controllers;
+namespace Benkyoukai.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]

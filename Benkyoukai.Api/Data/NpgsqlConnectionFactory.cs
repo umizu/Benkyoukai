@@ -1,7 +1,7 @@
 using System.Data;
 using Npgsql;
 
-namespace Benkyoukai.Data;
+namespace Benkyoukai.Api.Data;
 
 public class NpgsqlConnectionFactory : IDbConnectionFactory
 {

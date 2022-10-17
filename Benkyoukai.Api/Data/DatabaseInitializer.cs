@@ -1,6 +1,6 @@
 using Dapper;
 
-namespace Benkyoukai.Data;
+namespace Benkyoukai.Api.Data;
 
 public class DatabaseInitializer
 {

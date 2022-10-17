@@ -1,12 +1,14 @@
 using Benkyoukai.Contracts.Session;
-using Benkyoukai.Mappers;
-using Benkyoukai.Models;
-using Benkyoukai.ServiceErrors;
-using Benkyoukai.Services.Sessions;
+using Benkyoukai.Api.Mappers;
+using Benkyoukai.Api.Models;
+using Benkyoukai.Api.ServiceErrors;
+using Benkyoukai.Api.Services.Sessions;
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
+using Benkyoukai.Api.RequestFeatures;
+using System.Text.Json;
 
-namespace Benkyoukai.Controllers;
+namespace Benkyoukai.Api.Controllers;
 
 public class SessionsController : ApiController
 {
@@ -74,5 +76,16 @@ public class SessionsController : ApiController
         if (!await _sessionService.DeleteSessionAsync(id))
             return NotFound();
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetSessions([FromQuery] SessionParameters reqParams)
+    {
+        var (sessions, metaData) = await _sessionService.GetSessionsAsync(reqParams);
+
+        Response.Headers.Add("X-Pagination",
+            JsonSerializer.Serialize(metaData));
+            
+        return Ok(sessions);
     }
 }

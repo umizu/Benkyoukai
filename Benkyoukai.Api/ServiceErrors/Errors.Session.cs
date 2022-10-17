@@ -1,6 +1,6 @@
 using ErrorOr;
 
-namespace Benkyoukai.ServiceErrors;
+namespace Benkyoukai.Api.ServiceErrors;
 
 public static class Errors
 {

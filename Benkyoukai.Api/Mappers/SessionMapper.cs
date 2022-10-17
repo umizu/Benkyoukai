@@ -1,7 +1,7 @@
 using Benkyoukai.Contracts.Session;
-using Benkyoukai.Models;
+using Benkyoukai.Api.Models;
 
-namespace Benkyoukai.Mappers;
+namespace Benkyoukai.Api.Mappers;
 
 public static class SessionMapper
 {

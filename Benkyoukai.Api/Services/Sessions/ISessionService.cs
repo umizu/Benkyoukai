@@ -1,7 +1,8 @@
-using Benkyoukai.Models;
+using Benkyoukai.Api.Models;
+using Benkyoukai.Api.RequestFeatures;
 using ErrorOr;
 
-namespace Benkyoukai.Services.Sessions;
+namespace Benkyoukai.Api.Services.Sessions;
 
 public interface ISessionService
 {
@@ -9,4 +10,5 @@ public interface ISessionService
     Task<ErrorOr<Session>> GetSessionAsync(Guid id);
     Task<bool> UpsertSessionAsync(Session session);
     Task<bool> DeleteSessionAsync(Guid id);
+    Task<(IEnumerable<Session>, MetaData)> GetSessionsAsync(SessionParameters sessionParameters);
 }

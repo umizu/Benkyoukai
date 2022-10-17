@@ -1,10 +1,11 @@
-using Benkyoukai.Data;
-using Benkyoukai.Models;
-using Benkyoukai.ServiceErrors;
+using Benkyoukai.Api.Data;
+using Benkyoukai.Api.Models;
+using Benkyoukai.Api.RequestFeatures;
+using Benkyoukai.Api.ServiceErrors;
 using Dapper;
 using ErrorOr;
 
-namespace Benkyoukai.Services.Sessions;
+namespace Benkyoukai.Api.Services.Sessions;
 
 public class SessionService : ISessionService
 {
@@ -44,6 +45,29 @@ public class SessionService : ISessionService
         if (session is null)
             return Errors.Session.NotFound;
         return session;
+    }
+
+    public async Task<(IEnumerable<Session>, MetaData)> GetSessionsAsync(SessionParameters sessionParameters)
+    {
+        var query =
+            @"SELECT COUNT(Id)
+            FROM session;
+
+            SELECT *
+            FROM session
+            ORDER BY LastModifiedDateTime DESC
+            OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
+        
+        var skip = (sessionParameters.PageNumber - 1) * sessionParameters.PageSize;
+        
+        using var connection = await _connectionFactory.CreateConnectionAsync();
+        using var multi = await connection.QueryMultipleAsync(query, new { Skip = skip, Take = sessionParameters.PageSize });
+
+        var count = await multi.ReadSingleAsync<int>();
+        var sessions = (await multi.ReadAsync<Session>()).ToList();
+
+        var pagedSessions = new PagedList<Session>(sessions, count, sessionParameters.PageNumber, sessionParameters.PageSize);
+        return (sessions, pagedSessions.MetaData);
     }
 
     public Task<bool> UpsertSessionAsync(Session session)
