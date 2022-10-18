@@ -2,11 +2,11 @@ using Dapper;
 
 namespace Benkyoukai.Api.Data;
 
-public class DatabaseInitializer
+public class NpqsqlDbInitializer : IDbInitializer
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
-    public DatabaseInitializer(IDbConnectionFactory connectionFactory)
+    public NpqsqlDbInitializer(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }
@@ -20,8 +20,8 @@ public class DatabaseInitializer
                 Id UUID PRIMARY KEY,
                 Name VARCHAR NOT NULL,
                 Description VARCHAR NOT NULL,
-                StartDateTime TIMESTAMP NOT NULL,
-                EndDateTime TIMESTAMP NOT NULL,
-                LastModifiedDateTime TIMESTAMP NOT NULL)");
+                StartDateTime DATE NOT NULL,
+                EndDateTime DATE NOT NULL,
+                LastModifiedDateTime DATE NOT NULL)");
     }
 }
