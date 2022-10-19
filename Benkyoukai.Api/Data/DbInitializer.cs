@@ -2,11 +2,11 @@ using Dapper;
 
 namespace Benkyoukai.Api.Data;
 
-public class NpqsqlDbInitializer : IDbInitializer
+public class DbInitializer
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
-    public NpqsqlDbInitializer(IDbConnectionFactory connectionFactory)
+    public DbInitializer(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }

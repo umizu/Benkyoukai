@@ -12,11 +12,11 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
-builder.Services.AddSingleton<IDbConnectionFactory>(_ => new SqliteConnectionFactory(
-    builder.Configuration.GetValue<string>("ConnectionStrings:Sqlite")));
+builder.Services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(
+    builder.Configuration.GetValue<string>("ConnectionStrings:Docker")));
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IDbInitializer, SqliteDbInitilizer>()
+builder.Services.AddSingleton<DbInitializer>()
     .AddSingleton<ISessionService, SessionService>();
 
 builder.Services.AddEndpointsApiExplorer()
@@ -30,7 +30,7 @@ app.MapControllers();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// var dbInitializer = app.Services.GetRequiredService<IDbInitializer>();
-// await dbInitializer.InitializeAsync();
+var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
+await dbInitializer.InitializeAsync();
 
 app.Run();
