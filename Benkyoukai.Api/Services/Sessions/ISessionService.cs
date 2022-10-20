@@ -1,6 +1,5 @@
 using Benkyoukai.Api.Models;
 using Benkyoukai.Api.RequestFeatures;
-using ErrorOr;
 
 namespace Benkyoukai.Api.Services.Sessions;
 
