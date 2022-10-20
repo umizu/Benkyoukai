@@ -1,0 +1,34 @@
+version: '3.0'
+services:
+  web:
+    container_name: benkyoukai.api
+    image: ninjaz/benkyoukai:latest
+    ports:
+      - "6000:6000"
+    environment:
+      - ASPNETCORE_URLS=http://+:6000
+      - ASPNETCORE_ENVIRONMENT=Development
+      
+    depends_on: 
+      - db
+    networks:
+      - front-tier
+      - back-tier
+    restart: on-failure
+
+  db: 
+    container_name: benkyoukai.db
+    image: postgres:alpine
+    ports:
+      - "6003:5432"
+    environment:
+      - POSTGRES_PASSWORD=benkyoukai
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=benkyoukaidb
+    networks:
+      - back-tier
+    restart: always
+
+networks:
+  front-tier:
+  back-tier:

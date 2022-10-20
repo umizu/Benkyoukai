@@ -1,9 +1,7 @@
 using Benkyoukai.Api.Data;
 using Benkyoukai.Api.Models;
 using Benkyoukai.Api.RequestFeatures;
-using Benkyoukai.Api.ServiceErrors;
 using Dapper;
-using ErrorOr;
 
 namespace Benkyoukai.Api.Services.Sessions;
 
@@ -35,16 +33,12 @@ public class SessionService : ISessionService
         return result > 0;
     }
 
-    public async Task<ErrorOr<Session>> GetSessionAsync(Guid id)
+    public async Task<Session?> GetSessionAsync(Guid id)
     {
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
-        var session = await connection.QueryFirstOrDefaultAsync<Session>(
+        return await connection.QueryFirstOrDefaultAsync<Session>(
             @"SELECT * FROM Session WHERE Id = @Id", new { Id = id });
-
-        if (session is null)
-            return Errors.Session.NotFound;
-        return session;
     }
 
     public async Task<(IEnumerable<Session>, MetaData)> GetSessionsAsync(SessionParameters sessionParameters)
