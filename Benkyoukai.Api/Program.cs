@@ -24,12 +24,15 @@ var builder = WebApplication.CreateBuilder(args);
         .AddSwaggerGen();
 
     builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
+    builder.Services.AddHealthChecks();
 }
 
 var app = builder.Build();
 {
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.MapControllers();
+    app.MapHealthChecks("/health");
     
     app.UseSwagger();
     app.UseSwaggerUI();
