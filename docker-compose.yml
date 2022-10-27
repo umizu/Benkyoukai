@@ -37,6 +37,8 @@ services:
       - POSTGRES_PASSWORD=benkyoukai
       - POSTGRES_USER=postgres
       - POSTGRES_DB=benkyoukaidb
+    cap_add:
+      - NET_ADMIN
     volumes:
       - d:/.mydockercomposedata:/var/lib/postgresql/data
     networks:

@@ -19,8 +19,9 @@ WORKDIR /app
 COPY --from=build /app .
 
 RUN apt-get update
-RUN apt-get install -y iputils-ping
+# RUN apt-get install -y iputils-ping
 RUN apt-get install -y iproute2
+RUN ip route add 10.0.1.0/24 via 10.0.0.10
 
 
 ENTRYPOINT ["dotnet", "Benkyoukai.Api.dll"]
