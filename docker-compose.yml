@@ -1,27 +1,15 @@
 version: '3.4'
 services:
-  web:
-    container_name: portfiolio.site
-    image: ninjaz/portfolio
-    ports:
-      - "80:80"
-    depends_on:
-      - app
-    networks:
-      - front-tier
   api:
     container_name: benkyoukai.api
-    image: ninjaz/benkyoukai:latest
+    build:
+      context: ./Benkyoukai.Api/
+      dockerfile: Dockerfile
     ports:
       - "6000:6000"
-      - "6001:6001"
     environment:
-      - ASPNETCORE_URLS=http://+:6000;https://+:6001
+      - ASPNETCORE_URLS=http://+:6000
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=benkyoukai
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-    volumes:
-      - ~/.aspnet/https:/https:ro
     depends_on: 
       - db
     networks:
@@ -30,17 +18,17 @@ services:
     restart: on-failure
   db: 
     container_name: benkyoukai.db
-    image: postgres:alpine
+    build:
+      context: ./docker/db
+      dockerfile: Dockerfile
     ports:
-      - "6003:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=benkyoukai
       - POSTGRES_USER=postgres
       - POSTGRES_DB=benkyoukaidb
-    cap_add:
-      - NET_ADMIN
     volumes:
-      - d:/.mydockercomposedata:/var/lib/postgresql/data
+      - benkyoukaidev:/var/lib/postgresql/data
     networks:
       - back-tier
     restart: always
@@ -48,3 +36,6 @@ services:
 networks:
   front-tier:
   back-tier:
+
+volumes:
+  benkyoukaidev:
