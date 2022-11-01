@@ -1,3 +1,0 @@
-@id=1a236d32-b496-438e-8826-926c3db4fek
-
-GET http://localhost:7777/sessions/{{id}}
