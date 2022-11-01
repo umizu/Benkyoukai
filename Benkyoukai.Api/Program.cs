@@ -14,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Logging.AddSerilog(logger);
 
     builder.Services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(
-        builder.Configuration.GetValue<string>("ConnectionStrings:Db")));
+        Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
+            ?? builder.Configuration.GetValue<string>("ConnectionStrings:Db")));
 
     builder.Services.AddControllers();
     builder.Services.AddSingleton<DbInitializer>()
@@ -33,12 +34,13 @@ var app = builder.Build();
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.MapControllers();
     app.MapHealthChecks("/health");
+    app.MapGet("/", () => "Hello World!");
     
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
-    await dbInitializer.InitializeAsync();
+    // var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
+    // await dbInitializer.InitializeAsync();
 
     app.Run();
 }
