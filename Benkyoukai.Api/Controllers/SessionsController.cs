@@ -76,6 +76,10 @@ public class SessionsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteSession(Guid id)
     {
+        var userOwnsSession = await _sessionService.UserOwnsSessionAsync(id, HttpContext.GetUserId());
+        if (!userOwnsSession)
+            return Unauthorized();
+
         if (!await _sessionService.DeleteSessionAsync(id))
             return NotFound();
         return NoContent();

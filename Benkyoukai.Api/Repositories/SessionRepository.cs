@@ -73,8 +73,14 @@ public class SessionRepository : ISessionRepository
     {
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
-        var result = await connection.QueryFirstOrDefaultAsync<int>(
-            @"SELECT COUNT(Id) FROM Session WHERE Id = @Id AND UserId = @UserId",
+        var session = await connection.QueryFirstOrDefaultAsync<Session>(
+            @"SELECT UserId FROM Session WHERE Id = @Id AND UserId = @UserId",
             new { Id = sessionId, UserId = userId });
+        
+        if (session == null)
+            return false;
+        if (session.UserId != userId)
+            return false;
+        return true;
     }
 }
