@@ -1,20 +1,23 @@
 using Benkyoukai.Contracts.Session;
 using Benkyoukai.Api.Mappers;
 using Benkyoukai.Api.Models;
-using Benkyoukai.Api.Services.Sessions;
 using Microsoft.AspNetCore.Mvc;
 using Benkyoukai.Api.RequestFeatures;
 using System.Text.Json;
+using Benkyoukai.Api.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Benkyoukai.Api.Extensions;
 
 namespace Benkyoukai.Api.Controllers;
 
+[Authorize(Roles = "User")]
 [ApiController]
 [Route("[controller]")]
 public class SessionsController : ControllerBase
 {
-    private readonly ISessionService _sessionService;
+    private readonly ISessionRepository _sessionService;
 
-    public SessionsController(ISessionService sessionService)
+    public SessionsController(ISessionRepository sessionService)
     {
         _sessionService = sessionService;
     }
@@ -25,6 +28,7 @@ public class SessionsController : ControllerBase
         var session = new Session
         {
             Id = Guid.NewGuid(),
+            UserId = HttpContext.GetUserId(),
             Name = request.Name,
             Description = request.Description,
             StartDateTime = request.StartDateTime,

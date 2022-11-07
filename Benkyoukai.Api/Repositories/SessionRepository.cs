@@ -3,13 +3,13 @@ using Benkyoukai.Api.Models;
 using Benkyoukai.Api.RequestFeatures;
 using Dapper;
 
-namespace Benkyoukai.Api.Services.Sessions;
+namespace Benkyoukai.Api.Repositories;
 
-public class SessionService : ISessionService
+public class SessionRepository : ISessionRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
-    public SessionService(IDbConnectionFactory connectionFactory)
+    public SessionRepository(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }
@@ -19,7 +19,7 @@ public class SessionService : ISessionService
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
         var result = await connection.ExecuteAsync(
-            @"INSERT INTO Session (Id, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
+            @"INSERT INTO Session (Id, UserId, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @UserId, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
 
         return result > 0;
     }
@@ -67,5 +67,14 @@ public class SessionService : ISessionService
     public Task<bool> UpsertSessionAsync(Session session)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<bool> UserOwnsSessionAsync(Guid sessionId, string userId)
+    {
+        using var connection = await _connectionFactory.CreateConnectionAsync();
+
+        var result = await connection.QueryFirstOrDefaultAsync<int>(
+            @"SELECT COUNT(Id) FROM Session WHERE Id = @Id AND UserId = @UserId",
+            new { Id = sessionId, UserId = userId });
     }
 }

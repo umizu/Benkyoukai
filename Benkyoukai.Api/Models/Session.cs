@@ -8,4 +8,5 @@ public class Session
     public DateTime StartDateTime { get; set; }
     public DateTime EndDateTime { get; set; }
     public DateTime LastModifiedDateTime { get; set; }
+    public string UserId { get; set; } = default!;
 }

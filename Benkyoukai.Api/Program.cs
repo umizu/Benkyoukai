@@ -1,10 +1,31 @@
+using System.Text;
 using Benkyoukai.Api.Data;
 using Benkyoukai.Api.Middlewares;
-using Benkyoukai.Api.Services.Sessions;
+using Benkyoukai.Api.Repositories;
+using Benkyoukai.Api.Services.Authentication;
+using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opts =>
+    {
+        opts.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("Token:Secret"))),
+            ValidIssuer = builder.Configuration.GetValue<string>("Token:Issuer"),
+            ValidAudience = builder.Configuration.GetValue<string>("Token:Audience"),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
     var logger = new LoggerConfiguration()
         .ReadFrom.Configuration(builder.Configuration)
         .Enrich.FromLogContext()
@@ -13,18 +34,25 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Logging.ClearProviders();
     builder.Logging.AddSerilog(logger);
 
+    builder.Services.AddSingleton<IUserRepository, UserRepository>()
+        .AddSingleton<ISessionRepository, SessionRepository>();
+
+    builder.Services.AddScoped<IAuthService, AuthService>()
+        .AddScoped<ITokenService, TokenService>();
+
     builder.Services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(
-        Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
+        Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
             ?? builder.Configuration.GetValue<string>("ConnectionStrings:Db")));
+    builder.Services.AddSingleton<DbInitializer>();
 
     builder.Services.AddControllers();
-    builder.Services.AddSingleton<DbInitializer>()
-        .AddSingleton<ISessionService, SessionService>();
 
     builder.Services.AddEndpointsApiExplorer()
         .AddSwaggerGen();
 
-    builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+    builder.Services.AddHttpContextAccessor();
+
+    builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
     builder.Services.AddHealthChecks();
 }
@@ -32,10 +60,12 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 {
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+    app.UseAuthentication();
+    app.UseAuthorization();
     app.MapControllers();
     app.MapHealthChecks("/health");
     app.MapGet("/", () => "Hello World!");
-    
+
     app.UseSwagger();
     app.UseSwaggerUI();
 

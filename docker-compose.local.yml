@@ -1,20 +1,5 @@
 version: '3.4'
 services:
-  api:
-    container_name: benkyoukai.api
-    image: ninjaz/study.api
-    pull_policy: build
-    ports:
-      - "6000:6000"
-    environment:
-      - ASPNETCORE_URLS=http://+:6000
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on: 
-      - db
-    networks:
-      - front-tier
-      - back-tier
-    restart: on-failure
   db: 
     container_name: benkyoukai.db
     image: ninjaz/study.db
@@ -31,7 +16,6 @@ services:
     restart: always
 
 networks:
-  front-tier:
   back-tier:
 
 volumes:
