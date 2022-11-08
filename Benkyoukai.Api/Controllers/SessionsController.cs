@@ -78,7 +78,7 @@ public class SessionsController : ControllerBase
     {
         var userOwnsSession = await _sessionService.UserOwnsSessionAsync(id, HttpContext.GetUserId());
         if (!userOwnsSession)
-            return Unauthorized();
+            return Forbid();
 
         if (!await _sessionService.DeleteSessionAsync(id))
             return NotFound();
