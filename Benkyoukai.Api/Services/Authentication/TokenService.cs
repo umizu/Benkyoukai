@@ -82,7 +82,6 @@ public class TokenService : ITokenService
             HttpOnly = true,
             Expires = refreshToken.Expires,
             SameSite = SameSiteMode.Lax,
-            Secure = true
         };
 
         _httpContextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
