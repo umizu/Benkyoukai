@@ -3,7 +3,6 @@ services:
   api:
     container_name: benkyoukai.api
     image: ninjaz/study.api
-    pull_policy: build
     ports:
       - "6000:6000"
     environment:
