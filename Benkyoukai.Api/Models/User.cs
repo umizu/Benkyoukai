@@ -11,8 +11,8 @@ public class User
     public DateTime? TokenCreated { get; set; }
     public DateTime? TokenExpires { get; set; }
 
-    // public string? VerificationToken { get; set; }
-    // public DateTime? VerifiedAt { get; set; }
+    public string? VerificationToken { get; set; }
+    public DateTime? VerifiedAt { get; set; }
     // public string? PasswordResetToken { get; set; }
     // public DateTime? ResetTokenExpires { get; set; }
 

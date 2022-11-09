@@ -1,10 +1,13 @@
 
+using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 using Benkyoukai.Api.Extensions;
 using Benkyoukai.Api.Models;
 using Benkyoukai.Api.Repositories;
+using Benkyoukai.Api.Services.Email;
 using Benkyoukai.Contracts.Authentication;
 
 namespace Benkyoukai.Api.Services.Authentication;
@@ -14,12 +17,16 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepo;
     private readonly ITokenService _tokenService;
     private readonly IHttpContextAccessor _httpCtxAccessor;
+    private readonly EmailService _emailService;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IUserRepository userRepo, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
+    public AuthService(IUserRepository userRepo, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, EmailService emailService, ILogger<AuthService> logger)
     {
         _userRepo = userRepo;
         _tokenService = tokenService;
         _httpCtxAccessor = httpContextAccessor;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<AuthResult> RegisterAsync(RegisterRequest request)
@@ -27,7 +34,10 @@ public class AuthService : IAuthService
         if (await _userRepo.GetUserByUsernameAsync(request.Username) is not null)
             return new AuthResult(IsSuccess: false) { Errors = new[] { "Username is already taken." } };
 
+        // todo - check if email exists
+
         CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        var token = _tokenService.GenerateEmailConfirmationToken();
 
         var newUser = new User
         {
@@ -35,32 +45,36 @@ public class AuthService : IAuthService
             Username = request.Username,
             Email = request.Email,
             PasswordHash = passwordHash,
-            PasswordSalt = passwordSalt
+            PasswordSalt = passwordSalt,
+            VerificationToken = token
         };
 
         if (!await _userRepo.CreateUserAsync(newUser))
             return new AuthResult(IsSuccess: false)
             { Errors = new[] { "Failed to create user." } };
 
-        var claims = GenerateClaims(newUser);
-        string token = _tokenService.GenerateAccessToken(claims);
+        var callbackUrl = _httpCtxAccessor.HttpContext!.Request.Scheme + "://" + _httpCtxAccessor.HttpContext.Request.Host + "/auth/confirm-email?token=" + token + "&email=" + newUser.Email;
 
-        var refreshToken = _tokenService.GenerateRefreshToken();
+        callbackUrl = callbackUrl.Replace("+", "%2B");
+        
+        callbackUrl = HtmlEncoder.Default.Encode(callbackUrl);
 
-        newUser.RefreshToken = refreshToken.Token;
-        newUser.TokenCreated = refreshToken.Created;
-        newUser.TokenExpires = refreshToken.Expires;
+        var emailBody = $@"<p>Thank you for registering with Benkyoukai!</p>
+            <p>Please confirm your email by clicking the link below:</p>
+            <a href=""{callbackUrl}"">Confirm Email</a>";
 
-        if (!await _userRepo.UpdateUserRefreshTokenAsync(newUser))
-            throw new Exception("Failed to update user's refresh token.");
+        var sent = await _emailService.SendEmailAsync(
+            subject: "Welcome to Benkyoukai!",
+            body: emailBody);
 
-        return new AuthResult(IsSuccess: true)
+        if (!sent)
         {
-            TokenType = "Bearer",
-            AccessToken = token,
-            ExpiresIn = "3600",
-            RefreshToken = refreshToken.Token
-        };
+            _logger.LogCritical("Failed to send email to {email}", newUser.Email);
+            return new AuthResult(IsSuccess: false)
+            { Errors = new[] { "Failed to send email." } };
+        }
+
+        return new AuthResult(IsSuccess: true);
     }
 
     public async Task<AuthResult> LoginAsync(LoginRequest request)
@@ -70,7 +84,11 @@ public class AuthService : IAuthService
         if (user is null)
             return new AuthResult(IsSuccess: false)
             { Errors = new[] { "Username or password is incorrect." } };
-            
+
+        if (!user.IsVerified())
+            return new AuthResult(IsSuccess: false)
+            { Errors = new[] { "Please confirm your email address." } };
+        
         if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             return new AuthResult(IsSuccess: false)
             { Errors = new[] { "Username or password is incorrect." } };
@@ -84,7 +102,7 @@ public class AuthService : IAuthService
         user.TokenCreated = refreshToken.Created;
         user.TokenExpires = refreshToken.Expires;
 
-        if (!await _userRepo.UpdateUserRefreshTokenAsync(user))
+        if (!await _userRepo.UpdateRefreshTokenAsync(user))
             throw new Exception("Failed to update user's refresh token.");
 
         return new AuthResult(IsSuccess: true)
@@ -142,7 +160,7 @@ public class AuthService : IAuthService
         user.TokenCreated = newRefreshToken.Created;
         user.TokenExpires = newRefreshToken.Expires;
 
-        if (!await _userRepo.UpdateUserRefreshTokenAsync(user))
+        if (!await _userRepo.UpdateRefreshTokenAsync(user))
             throw new Exception("Failed to update user's refresh token.");
 
         return new AuthResult(IsSuccess: true)
@@ -168,9 +186,24 @@ public class AuthService : IAuthService
         user.TokenCreated = null;
         user.TokenExpires = null;
 
-        if (!await _userRepo.UpdateUserRefreshTokenAsync(user))
+        if (!await _userRepo.UpdateRefreshTokenAsync(user))
             throw new Exception("Failed to update user's refresh token.");
 
+        return true;
+    }
+
+    public async Task<bool> ConfirmEmailAsync(string token, string email)
+    {
+        var user = await _userRepo.GetUserByConfirmationTokenAsync(token);
+        if (user is null)
+            return false;
+        if (user.Email != email)
+            return false;
+        
+        user.VerifiedAt = DateTime.Now;
+        if (!await _userRepo.UpdateVerifiedAsync(user.Id, user.VerifiedAt.Value))
+            throw new Exception("Unable to update verified user.");
+        
         return true;
     }
 }

@@ -26,7 +26,9 @@ public class DbInitializer
                 Email VARCHAR(255) NOT NULL,
                 RefreshToken VARCHAR(255),
                 TokenCreated TIMESTAMP,
-                TokenExpires TIMESTAMP)") > 0)
+                TokenExpires TIMESTAMP,
+                VerificationToken VARCHAR NOT NULL,
+                VerifiedAt TIMESTAMP)") > 0)
             _logger.LogInformation("Created Users table");
 
         if (await connection.ExecuteAsync(

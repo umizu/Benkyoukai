@@ -13,4 +13,6 @@ public interface ITokenService
     /// <returns>The refresh token.</returns>
     RefreshToken GenerateRefreshToken();
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+
+    string GenerateEmailConfirmationToken();
 }

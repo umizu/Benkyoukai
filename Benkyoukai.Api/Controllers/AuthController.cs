@@ -1,3 +1,4 @@
+using System.Text;
 using Benkyoukai.Api.Services.Authentication;
 using Benkyoukai.Contracts.Authentication;
 using FluentValidation;
@@ -34,11 +35,7 @@ public class AuthController : ControllerBase
             return BadRequest(new AuthFailedResponse(
                 Errors: authResult.Errors));
 
-        return Ok(new AuthSuccessResponse(
-            TokenType: authResult.TokenType,
-            AccessToken: authResult.AccessToken,
-            ExpiresIn: authResult.ExpiresIn,
-            RefreshToken: authResult.RefreshToken));
+        return NoContent();
     }
 
     [HttpPost("login")]
@@ -71,6 +68,17 @@ public class AuthController : ControllerBase
             AccessToken: authResult.AccessToken,
             ExpiresIn: authResult.ExpiresIn,
             RefreshToken: authResult.RefreshToken));
+    }
+
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    {
+        var confirmed = await _authService.ConfirmEmailAsync(token, email);
+        if (!confirmed)
+            return BadRequest(new AuthFailedResponse(
+                Errors: new[] { "Invalid email confirmation url." }));
+
+        return NoContent();
     }
 
     [Authorize()]

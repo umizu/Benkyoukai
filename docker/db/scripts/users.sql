@@ -6,4 +6,6 @@ CREATE TABLE IF NOT EXISTS Users(
     Email VARCHAR(255) NOT NULL,
     RefreshToken VARCHAR(255),
     TokenCreated TIMESTAMP,
-    TokenExpires TIMESTAMP);
+    TokenExpires TIMESTAMP,
+    VerificationToken VARCHAR NOT NULL,
+    VerifiedAt TIMESTAMP);

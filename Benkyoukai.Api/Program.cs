@@ -3,6 +3,7 @@ using Benkyoukai.Api.Data;
 using Benkyoukai.Api.Middlewares;
 using Benkyoukai.Api.Repositories;
 using Benkyoukai.Api.Services.Authentication;
+using Benkyoukai.Api.Services.Email;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +27,8 @@ var builder = WebApplication.CreateBuilder(args);
         };
     });
 
+    builder.Services.AddAuthorization();
+
     var logger = new LoggerConfiguration()
         .ReadFrom.Configuration(builder.Configuration)
         .Enrich.FromLogContext()
@@ -38,7 +41,8 @@ var builder = WebApplication.CreateBuilder(args);
         .AddSingleton<ISessionRepository, SessionRepository>();
 
     builder.Services.AddScoped<IAuthService, AuthService>()
-        .AddScoped<ITokenService, TokenService>();
+        .AddScoped<ITokenService, TokenService>()
+        .AddScoped<EmailService>();
 
     builder.Services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(
         Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")

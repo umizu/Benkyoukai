@@ -86,4 +86,7 @@ public class TokenService : ITokenService
 
         _httpContextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
     }
+
+    public string GenerateEmailConfirmationToken()
+        => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 }
