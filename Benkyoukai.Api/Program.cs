@@ -3,6 +3,7 @@ using Benkyoukai.Api.Data;
 using Benkyoukai.Api.Middlewares;
 using Benkyoukai.Api.Repositories;
 using Benkyoukai.Api.Services.Authentication;
+using Benkyoukai.Api.Services.Common;
 using Benkyoukai.Api.Services.Email;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,12 +43,19 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddScoped<IAuthService, AuthService>()
         .AddScoped<ITokenService, TokenService>()
-        .AddScoped<EmailService>();
+        .AddScoped<IEmailService, EmailService>()
+        .AddScoped<IMessageProducer, MessageProducer>();
 
     builder.Services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(
         Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
             ?? builder.Configuration.GetValue<string>("ConnectionStrings:Db")));
     builder.Services.AddSingleton<DbInitializer>();
+
+    builder.Services.AddSingleton<IMQConnectionFactory>(_ => new RMQConnectionFactory(
+        hostName: builder.Configuration.GetValue<string>("RabbitMQ:Hostname"),
+        userName: builder.Configuration.GetValue<string>("RabbitMQ:Username"),
+        password: builder.Configuration.GetValue<string>("RabbitMQ:Password")
+    ));
 
     builder.Services.AddControllers();
 
