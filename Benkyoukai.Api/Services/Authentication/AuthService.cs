@@ -9,6 +9,7 @@ using Benkyoukai.Api.Models;
 using Benkyoukai.Api.Repositories;
 using Benkyoukai.Api.Services.Email;
 using Benkyoukai.Contracts.Authentication;
+using Benkyoukai.Services.Contracts.Email;
 
 namespace Benkyoukai.Api.Services.Authentication;
 
@@ -17,10 +18,10 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepo;
     private readonly ITokenService _tokenService;
     private readonly IHttpContextAccessor _httpCtxAccessor;
-    private readonly EmailService _emailService;
+    private readonly IEmailService _emailService;
     private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IUserRepository userRepo, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, EmailService emailService, ILogger<AuthService> logger)
+    public AuthService(IUserRepository userRepo, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IEmailService emailService, ILogger<AuthService> logger)
     {
         _userRepo = userRepo;
         _tokenService = tokenService;
@@ -56,23 +57,17 @@ public class AuthService : IAuthService
         var callbackUrl = _httpCtxAccessor.HttpContext!.Request.Scheme + "://" + _httpCtxAccessor.HttpContext.Request.Host + "/auth/confirm-email?token=" + token + "&email=" + newUser.Email;
 
         callbackUrl = callbackUrl.Replace("+", "%2B");
-        
         callbackUrl = HtmlEncoder.Default.Encode(callbackUrl);
 
         var emailBody = $@"<p>Thank you for registering with Benkyoukai!</p>
             <p>Please confirm your email by clicking the link below:</p>
             <a href=""{callbackUrl}"">Confirm Email</a>";
 
-        var sent = await _emailService.SendEmailAsync(
-            subject: "Welcome to Benkyoukai!",
-            body: emailBody);
-
-        if (!sent)
-        {
-            _logger.LogCritical("Failed to send email to {email}", newUser.Email);
-            return new AuthResult(IsSuccess: false)
-            { Errors = new[] { "Failed to send email." } };
-        }
+        _emailService.SendRegistrationEmail(
+            new EmailRegisterMessageDto(
+                Address: newUser.Email,
+                Subject: "Benkyoukai - Confirm Email",
+                Body: emailBody));
 
         return new AuthResult(IsSuccess: true);
     }
@@ -88,7 +83,7 @@ public class AuthService : IAuthService
         if (!user.IsVerified())
             return new AuthResult(IsSuccess: false)
             { Errors = new[] { "Please confirm your email address." } };
-        
+
         if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             return new AuthResult(IsSuccess: false)
             { Errors = new[] { "Username or password is incorrect." } };
@@ -199,11 +194,11 @@ public class AuthService : IAuthService
             return false;
         if (user.Email != email)
             return false;
-        
+
         user.VerifiedAt = DateTime.Now;
         if (!await _userRepo.UpdateVerifiedAsync(user.Id, user.VerifiedAt.Value))
             throw new Exception("Unable to update verified user.");
-        
+
         return true;
     }
 }
