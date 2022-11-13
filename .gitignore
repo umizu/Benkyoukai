@@ -18,6 +18,7 @@
 
 # appsettings
 **/*local.json
+**/*appsettings.json
 
 # Mono auto generated files
 mono_crash.*
