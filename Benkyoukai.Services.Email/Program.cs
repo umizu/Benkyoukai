@@ -24,7 +24,7 @@ var app = builder.Build();
 var emailService = app.Services.GetRequiredService<IEmailService>();
 var messageConsumer = app.Services.GetRequiredService<IMessageConsumer>();
 
-var consumer = messageConsumer.CreateEmailRegistrationChannel();
-consumer.Received += emailService.ProcessMessage(consumer.Model);
+var registrationMessageConsumer = messageConsumer.CreateEmailRegistrationChannel();
+registrationMessageConsumer.Received += emailService.ProcessMessage(registrationMessageConsumer.Model);
 
 app.Run();
