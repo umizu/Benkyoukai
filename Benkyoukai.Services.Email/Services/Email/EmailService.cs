@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json;
 using Benkyoukai.Services.Contracts.Email;
 using Benkyoukai.Services.Email.Options;
 using MailKit.Net.Smtp;
@@ -5,8 +7,10 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
-namespace Benkyoukai.Services.Email.Services;
+namespace Benkyoukai.Services.Email.Services.Email;
 
 public class EmailService : IEmailService
 {
@@ -17,7 +21,27 @@ public class EmailService : IEmailService
         _smtpSettings = smtpSettings.Value;
     }
 
-    public async Task<bool> SendEmailAsync(EmailRegisterMessageDto message)
+    public EventHandler<BasicDeliverEventArgs> ProcessMessage(IModel channel)
+    {
+        return async (sender, eventArgs) =>
+        {
+            var body = eventArgs.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            var email = JsonSerializer.Deserialize<EmailRegisterMessageDto>(message)!;
+
+            var sent = await SendEmailAsync(email);
+            if (!sent)
+            {
+                channel.BasicNack(eventArgs.DeliveryTag, false, true);
+                return;
+            }
+
+            Console.WriteLine($"Received {message}");
+            channel.BasicAck(eventArgs.DeliveryTag, false);
+        };
+    }
+
+    private async Task<bool> SendEmailAsync(EmailRegisterMessageDto message)
     {
         var email = new MimeMessage();
         email.From.Add(MailboxAddress.Parse(_smtpSettings.Username));
