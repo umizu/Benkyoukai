@@ -16,6 +16,9 @@
 # Database files
 *.db
 
+# appsettings
+**/*local.json
+
 # Mono auto generated files
 mono_crash.*
 
