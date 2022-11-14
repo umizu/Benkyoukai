@@ -14,15 +14,22 @@ public class MessageProducer : IMessageProducer
         _connectionFactory = connectionFactory;
     }
 
-    public void SendMessage<T>(T message, string exchange, string queue)
+    public void SendMessage<T>(T message, string exchange, string queue, string deadLetterRoutingKey)
     {
         using var connection = _connectionFactory.CreateConnection();
         using var channel = connection.CreateModel();
 
+        var args = new Dictionary<string, object>
+        {
+            {"x-dead-letter-exchange", "dlx.exchange"},
+            {"x-dead-letter-routing-key", deadLetterRoutingKey}
+        };
+
         channel.QueueDeclare(
             queue: queue,
             durable: true,
-            exclusive: false);
+            exclusive: false,
+            arguments: args);
 
         var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 

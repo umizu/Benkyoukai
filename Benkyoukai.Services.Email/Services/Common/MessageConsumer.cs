@@ -13,21 +13,37 @@ public class MessageConsumer : IMessageConsumer
         _connectionFactory = connectionFactory;
     }
 
-    public EventingBasicConsumer CreateEmailRegistrationChannel()
+    public EventingBasicConsumer OpenChannel(string queue, string deadLetterRoutingKey = "")
     {
         var connection = _connectionFactory.CreateConnection();
         var channel = connection.CreateModel();
-        
-        channel.QueueDeclare(
-            queue: "email",
+
+        channel.ExchangeDeclare(
+            exchange: "dlx.exchange",
+            type: ExchangeType.Direct,
             durable: true,
-            exclusive: false
+            autoDelete: false,
+            arguments: null);
+        
+        var args = new Dictionary<string, object>();
+
+        if (!string.IsNullOrEmpty(deadLetterRoutingKey))    
+        {
+            args.Add("x-dead-letter-exchange", "dlx.exchange");
+            args.Add("x-dead-letter-routing-key", deadLetterRoutingKey);
+        }
+
+        channel.QueueDeclare(
+            queue: queue,
+            durable: true,
+            exclusive: false,
+            arguments: args
         );
 
         var consumer = new EventingBasicConsumer(channel);
 
         channel.BasicConsume(
-            queue: "email",
+            queue: queue,
             autoAck: false,
             consumer: consumer);
 

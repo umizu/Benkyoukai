@@ -4,5 +4,5 @@ namespace Benkyoukai.Services.Email.Services.Common;
 
 public interface IMessageConsumer
 {
-    EventingBasicConsumer CreateEmailRegistrationChannel();
+    EventingBasicConsumer OpenChannel(string queue, string deadLetterRoutingKey = "");
 }

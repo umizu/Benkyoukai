@@ -2,7 +2,9 @@ version: '3.4'
 services:
   db: 
     container_name: benkyoukai.db
-    image: ninjaz/study.db
+    build:
+      context: ./docker/db
+      dockerfile: Dockerfile
     ports:
       - 5432:5432
     environment:

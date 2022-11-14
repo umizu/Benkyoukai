@@ -21,22 +21,23 @@ public class EmailService : IEmailService
         _smtpSettings = smtpSettings.Value;
     }
 
-    public EventHandler<BasicDeliverEventArgs> ProcessMessage(IModel channel)
+    public EventHandler<BasicDeliverEventArgs> ProcessEmail(IModel channel)
     {
         return async (sender, eventArgs) =>
         {
             var body = eventArgs.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             var email = JsonSerializer.Deserialize<EmailRegisterMessageDto>(message)!;
+            Console.WriteLine($"Received {message}");
+            // var sent = await SendEmailAsync(email);
 
-            var sent = await SendEmailAsync(email);
+            var sent = false;
             if (!sent)
             {
-                channel.BasicNack(eventArgs.DeliveryTag, false, true);
+                channel.BasicNack(eventArgs.DeliveryTag, false, false);
                 return;
             }
 
-            Console.WriteLine($"Received {message}");
             channel.BasicAck(eventArgs.DeliveryTag, false);
         };
     }

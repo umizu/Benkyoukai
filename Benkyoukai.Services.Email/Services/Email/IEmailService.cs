@@ -5,5 +5,5 @@ namespace Benkyoukai.Services.Email.Services.Email;
 
 public interface IEmailService
 {
-    EventHandler<BasicDeliverEventArgs> ProcessMessage(IModel channel);
+    EventHandler<BasicDeliverEventArgs> ProcessEmail(IModel channel);
 }
