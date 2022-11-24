@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using Benkyoukai.Api.Data;
 using Benkyoukai.Api.Middlewares;
@@ -17,10 +18,13 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts =>
     {
+        var rsaKey = RSA.Create();
+        rsaKey.ImportRSAPrivateKey(File.ReadAllBytes("key.pem"), out _);
+
         opts.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("Token:Secret"))),
+            IssuerSigningKey = new RsaSecurityKey(rsaKey),
             ValidIssuer = builder.Configuration.GetValue<string>("Token:Issuer"),
             ValidAudience = builder.Configuration.GetValue<string>("Token:Audience"),
             ValidateLifetime = true,

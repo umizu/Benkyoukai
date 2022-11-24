@@ -21,8 +21,11 @@ public class TokenService : ITokenService
 
     public string GenerateAccessToken(IEnumerable<Claim> claims)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Token:Secret")));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+        var rsaKey = RSA.Create();
+        rsaKey.ImportRSAPrivateKey(File.ReadAllBytes("key.pem"), out _);
+
+        var key = new RsaSecurityKey(rsaKey);
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
 
         return new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
         {
@@ -50,7 +53,7 @@ public class TokenService : ITokenService
         try
         {
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature, StringComparison.InvariantCultureIgnoreCase))
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256, StringComparison.InvariantCultureIgnoreCase))
                 return null;
             return principal;
         }
@@ -69,12 +72,12 @@ public class TokenService : ITokenService
             Created = DateTime.Now
         };
 
-        AddRefreshTokenToCookie(refreshToken);
+        SetRefreshCookie(refreshToken);
 
         return refreshToken;
     }
 
-    public void AddRefreshTokenToCookie(RefreshToken refreshToken)
+    public void SetRefreshCookie(RefreshToken refreshToken)
     {
         var cookieOptions = new CookieOptions
         {
