@@ -29,7 +29,7 @@ public class TokenService : ITokenService
 
         return new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(claims, "jwt"),
+            Subject = new ClaimsIdentity(claims),
             Issuer = _configuration.GetValue<string>("Token:Issuer"),
             Audience = _configuration.GetValue<string>("Token:Audience"),
             Expires = DateTime.Now.AddMinutes(60),
