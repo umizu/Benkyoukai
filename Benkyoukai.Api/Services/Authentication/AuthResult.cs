@@ -7,7 +7,7 @@ public class AuthResult
     public string TokenType { get; set; } = default!;
     public string AccessToken { get; set; } = default!;
     public string ExpiresIn { get; set; } = default!;
-    public string RefreshToken { get; set; } = default!; 
+    public string RefreshToken { get; set; } = default!;
 
     public AuthResult(bool IsSuccess)
     {

@@ -10,7 +10,7 @@ using Benkyoukai.Api.Extensions;
 
 namespace Benkyoukai.Api.Controllers;
 
-[Authorize(Roles = "User")]
+[Authorize(Policy = "User")]
 [ApiController]
 [Route("[controller]")]
 public class SessionsController : ControllerBase
@@ -92,7 +92,7 @@ public class SessionsController : ControllerBase
 
         Response.Headers.Add("X-Pagination",
             JsonSerializer.Serialize(metaData));
-            
+
         return Ok(sessions);
     }
 }

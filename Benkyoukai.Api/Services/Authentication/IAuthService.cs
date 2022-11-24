@@ -1,5 +1,3 @@
-
-
 using Benkyoukai.Contracts.Authentication;
 
 namespace Benkyoukai.Api.Services.Authentication;

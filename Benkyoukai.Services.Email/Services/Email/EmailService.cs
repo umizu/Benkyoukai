@@ -29,9 +29,8 @@ public class EmailService : IEmailService
             var message = Encoding.UTF8.GetString(body);
             var email = JsonSerializer.Deserialize<EmailRegisterMessageDto>(message)!;
             Console.WriteLine($"Received {message}");
-            // var sent = await SendEmailAsync(email);
+            var sent = await SendEmailAsync(email);
 
-            var sent = false;
             if (!sent)
             {
                 channel.BasicNack(eventArgs.DeliveryTag, false, false);

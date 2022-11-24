@@ -3,7 +3,6 @@ namespace Benkyoukai.Api.RequestFeatures;
 public abstract class RequestParameters
 {
     const int maxPageSize = 50;
-    
     private int pageNumber = 1;
     public int PageNumber
     {

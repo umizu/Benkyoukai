@@ -19,7 +19,7 @@ public class SessionRepository : ISessionRepository
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
         var result = await connection.ExecuteAsync(
-            @"INSERT INTO Session (Id, UserId, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @UserId, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
+            "INSERT INTO Session (Id, UserId, Name, Description, StartDateTime, EndDateTime, LastModifiedDateTime) VALUES (@Id, @UserId, @Name, @Description, @StartDateTime, @EndDateTime, @LastModifiedDateTime)", session);
 
         return result > 0;
     }
@@ -28,7 +28,7 @@ public class SessionRepository : ISessionRepository
     {
         using var connection = await _connectionFactory.CreateConnectionAsync();
         var result = await connection.ExecuteAsync(
-            @"DELETE FROM Session WHERE Id = @Id",
+            "DELETE FROM Session WHERE Id = @Id",
             new { Id = id });
         return result > 0;
     }
@@ -38,7 +38,7 @@ public class SessionRepository : ISessionRepository
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
         return await connection.QueryFirstOrDefaultAsync<Session>(
-            @"SELECT * FROM Session WHERE Id = @Id", new { Id = id });
+            "SELECT * FROM Session WHERE Id = @Id", new { Id = id });
     }
 
     public async Task<(IEnumerable<Session>, MetaData)> GetSessionsAsync(SessionParameters sessionParameters)
@@ -51,9 +51,9 @@ public class SessionRepository : ISessionRepository
             FROM session
             ORDER BY LastModifiedDateTime DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
-        
+
         var skip = (sessionParameters.PageNumber - 1) * sessionParameters.PageSize;
-        
+
         using var connection = await _connectionFactory.CreateConnectionAsync();
         using var multi = await connection.QueryMultipleAsync(query, new { Skip = skip, Take = sessionParameters.PageSize });
 
@@ -74,9 +74,9 @@ public class SessionRepository : ISessionRepository
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
         var session = await connection.QueryFirstOrDefaultAsync<Session>(
-            @"SELECT UserId FROM Session WHERE Id = @Id AND UserId = @UserId",
+            "SELECT UserId FROM Session WHERE Id = @Id AND UserId = @UserId",
             new { Id = sessionId, UserId = userId });
-        
+
         if (session == null)
             return false;
         if (session.UserId != userId)

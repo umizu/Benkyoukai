@@ -8,7 +8,6 @@ public interface IUserRepository
     Task<User?> GetUserByUsernameAsync(string username);
     Task<User?> GetUserByConfirmationTokenAsync(string verificationToken);
     Task<bool> UpdateRefreshTokenAsync(User user);
-    
     Task<bool> UpdateVerificationTokenAsync(Guid userId, string verificationToken);
     Task<bool> UpdateVerifiedAsync(Guid userId, DateTime verifiedAt);
 }

@@ -58,7 +58,7 @@ public class UserRepository : IUserRepository
         var results = await connection.ExecuteAsync(
             @"UPDATE Users
             SET VerificationToken = @VerificationToken
-            WHERE Id = @Id", 
+            WHERE Id = @Id",
                 new { Id = userId, VerificationToken = verificationToken });
 
         return results > 0;
@@ -70,7 +70,7 @@ public class UserRepository : IUserRepository
         var results = await connection.ExecuteAsync(
             @"UPDATE Users
             SET VerifiedAt = @VerifiedAt
-            WHERE Id = @Id", 
+            WHERE Id = @Id",
                 new { Id = userId, VerifiedAt = verifiedAt });
 
         return results > 0;
