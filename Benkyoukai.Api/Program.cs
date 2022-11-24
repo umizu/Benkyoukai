@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opts =>
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts =>
     {
         opts.TokenValidationParameters = new TokenValidationParameters
         {
@@ -28,7 +28,14 @@ var builder = WebApplication.CreateBuilder(args);
         };
     });
 
-    builder.Services.AddAuthorization();
+    builder.Services.AddAuthorization(b =>
+    {
+        b.AddPolicy("User", p =>
+        {
+            p.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+            .RequireAuthenticatedUser();
+        });
+    });
 
     var logger = new LoggerConfiguration()
         .ReadFrom.Configuration(builder.Configuration)
@@ -86,4 +93,3 @@ var app = builder.Build();
 
     app.Run();
 }
-

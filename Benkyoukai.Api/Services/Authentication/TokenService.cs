@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Benkyoukai.Api.Models;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Benkyoukai.Api.Services.Authentication;
@@ -22,17 +23,15 @@ public class TokenService : ITokenService
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Token:Secret")));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
-        
-        var token = new JwtSecurityToken(
-            issuer: _configuration.GetValue<string>("Token:Issuer"),
-            audience: _configuration.GetValue<string>("Token:Audience"),
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(60),
-            signingCredentials: credentials
-        );
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return jwt;
+        return new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims, "jwt"),
+            Issuer = _configuration.GetValue<string>("Token:Issuer"),
+            Audience = _configuration.GetValue<string>("Token:Audience"),
+            Expires = DateTime.Now.AddMinutes(60),
+            SigningCredentials = credentials
+        });
     }
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
