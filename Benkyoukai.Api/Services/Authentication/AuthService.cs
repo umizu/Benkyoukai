@@ -17,15 +17,13 @@ public class AuthService : IAuthService
     private readonly ITokenService _tokenService;
     private readonly IHttpContextAccessor _httpCtxAccessor;
     private readonly IEmailService _emailService;
-    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IUserRepository userRepo, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IEmailService emailService, ILogger<AuthService> logger)
+    public AuthService(IUserRepository userRepo, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
     {
         _userRepo = userRepo;
         _tokenService = tokenService;
         _httpCtxAccessor = httpContextAccessor;
         _emailService = emailService;
-        _logger = logger;
     }
 
     public async Task<AuthResult> RegisterAsync(RegisterRequest request)
@@ -63,16 +61,15 @@ public class AuthService : IAuthService
 
         _emailService.SendRegistrationEmail(
             new EmailRegisterMessageDto(
-                Address: newUser.Email,
                 Subject: "Benkyoukai - Confirm Email",
-                Body: emailBody));
+                Body: emailBody,
+                Address: newUser.Email));
 
         return new AuthResult(IsSuccess: true);
     }
 
     public async Task<AuthResult> LoginAsync(LoginRequest request)
     {
-
         var user = await _userRepo.GetUserByUsernameAsync(request.Username);
         if (user is null)
             return new AuthResult(IsSuccess: false)
@@ -111,8 +108,7 @@ public class AuthService : IAuthService
         => new List<Claim>()
             {
                 new (ClaimTypes.Name, user.Username),
-                new (ClaimTypes.Email, user.Email),
-                new (ClaimTypes.Role, "User")
+                new (ClaimTypes.Email, user.Email)
             };
 
     private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
