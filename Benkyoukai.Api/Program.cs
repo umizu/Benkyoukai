@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 using Benkyoukai.Api.Data;
 using Benkyoukai.Api.Middlewares;
 using Benkyoukai.Api.Repositories;
@@ -38,6 +37,16 @@ var builder = WebApplication.CreateBuilder(args);
         {
             p.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
             .RequireAuthenticatedUser();
+        });
+    });
+
+    builder.Services.AddCors(opts =>
+    {
+        opts.AddDefaultPolicy(b =>
+        {
+            b.AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithOrigins("http://localhost:5173");
         });
     });
 
@@ -82,13 +91,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
+    app.UseCors();
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
-    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health").AllowAnonymous();
     app.MapGet("/", () => "Hello World!");
-
     app.UseSwagger();
     app.UseSwaggerUI();
 
