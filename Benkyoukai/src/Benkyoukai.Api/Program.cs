@@ -53,7 +53,6 @@ var builder = WebApplication.CreateBuilder(args);
         .ReadFrom.Configuration(builder.Configuration)
         .Enrich.FromLogContext()
         .CreateLogger();
-
     builder.Logging.ClearProviders();
     builder.Logging.AddSerilog(logger);
 
@@ -67,7 +66,7 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(
         Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-            ?? builder.Configuration.GetValue<string>("ConnectionStrings:Db")));
+            ?? builder.Configuration.GetValue<string>("Database:ConnectionString")));
     builder.Services.AddSingleton<DbInitializer>();
 
     builder.Services.AddSingleton<IMQConnectionFactory>(_ => new RMQConnectionFactory(
@@ -76,15 +75,12 @@ var builder = WebApplication.CreateBuilder(args);
         password: builder.Configuration.GetValue<string>("RabbitMQ:Password")
     ));
 
-    builder.Services.AddControllers();
-
     builder.Services.AddEndpointsApiExplorer()
         .AddSwaggerGen();
 
+    builder.Services.AddControllers();
     builder.Services.AddHttpContextAccessor();
-
     builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
     builder.Services.AddHealthChecks();
 }
 
@@ -97,11 +93,15 @@ var app = builder.Build();
     app.MapControllers();
     app.MapHealthChecks("/health").AllowAnonymous();
     app.MapGet("/", () => "Hello World!");
-    app.UseSwagger();
-    app.UseSwaggerUI();
 
-    // var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
-    // await dbInitializer.InitializeAsync();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
+    await dbInitializer.InitializeAsync();
 
     app.Run();
 }

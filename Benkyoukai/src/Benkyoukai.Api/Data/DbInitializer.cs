@@ -17,7 +17,7 @@ public class DbInitializer
     {
         using var connection = await _connectionFactory.CreateConnectionAsync();
 
-        if (await connection.ExecuteAsync(
+        await connection.ExecuteAsync(
                 @"CREATE TABLE IF NOT EXISTS Users (
                 Id UUID PRIMARY KEY,
                 Username VARCHAR(30) NOT NULL,
@@ -28,10 +28,9 @@ public class DbInitializer
                 TokenCreated TIMESTAMP,
                 TokenExpires TIMESTAMP,
                 VerificationToken VARCHAR NOT NULL,
-                VerifiedAt TIMESTAMP)") > 0)
-            _logger.LogInformation("Created Users table");
+                VerifiedAt TIMESTAMP)");
 
-        if (await connection.ExecuteAsync(
+        await connection.ExecuteAsync(
                 @"CREATE TABLE IF NOT EXISTS Session (
                 Id UUID PRIMARY KEY,
                 UserId VARCHAR(255) NOT NULL,
@@ -39,7 +38,8 @@ public class DbInitializer
                 Description VARCHAR NOT NULL,
                 StartDateTime DATE NOT NULL,
                 EndDateTime DATE NOT NULL,
-                LastModifiedDateTime DATE NOT NULL)") > 0)
-            _logger.LogInformation("Created Session table");
+                LastModifiedDateTime DATE NOT NULL)");
+
+        _logger.LogInformation("Database initialized");
     }
 }
