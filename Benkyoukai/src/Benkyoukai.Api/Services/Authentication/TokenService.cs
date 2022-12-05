@@ -21,7 +21,6 @@ public class TokenService : ITokenService
 
     public string GenerateAccessToken(IEnumerable<Claim> claims)
     {
-
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Token:Secret")));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 

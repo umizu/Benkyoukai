@@ -24,10 +24,10 @@ public class MessageConsumer : IMessageConsumer
             durable: true,
             autoDelete: false,
             arguments: null);
-        
+
         var args = new Dictionary<string, object>();
 
-        if (!string.IsNullOrEmpty(deadLetterRoutingKey))    
+        if (!string.IsNullOrEmpty(deadLetterRoutingKey))
         {
             args.Add("x-dead-letter-exchange", "dlx.exchange");
             args.Add("x-dead-letter-routing-key", deadLetterRoutingKey);
