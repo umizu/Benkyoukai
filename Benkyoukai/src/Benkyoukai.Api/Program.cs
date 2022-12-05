@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
-                builder.Configuration.GetValue<string>("Token:Secret")
+                builder.Configuration.GetValue<string>("Token:Secret")!
             )),
             ValidIssuer = builder.Configuration.GetValue<string>("Token:Issuer"),
             ValidAudience = builder.Configuration.GetValue<string>("Token:Audience"),
@@ -66,13 +66,13 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(
         Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-            ?? builder.Configuration.GetValue<string>("Database:ConnectionString")));
+            ?? builder.Configuration.GetValue<string>("Database:ConnectionString")!));
     builder.Services.AddSingleton<DbInitializer>();
 
     builder.Services.AddSingleton<IMQConnectionFactory>(_ => new RMQConnectionFactory(
-        hostName: builder.Configuration.GetValue<string>("RabbitMQ:Hostname"),
-        userName: builder.Configuration.GetValue<string>("RabbitMQ:Username"),
-        password: builder.Configuration.GetValue<string>("RabbitMQ:Password")
+        hostName: builder.Configuration.GetValue<string>("RabbitMQ:Hostname")!,
+        userName: builder.Configuration.GetValue<string>("RabbitMQ:Username")!,
+        password: builder.Configuration.GetValue<string>("RabbitMQ:Password")!
     ));
 
     builder.Services.AddEndpointsApiExplorer()
