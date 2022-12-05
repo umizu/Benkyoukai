@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using Benkyoukai.Services.Contracts.Email;
-using Benkyoukai.Services.Email.Options;
+using Benkyoukai.Email.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
@@ -10,7 +10,7 @@ using MimeKit.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Benkyoukai.Services.Email.Services.Email;
+namespace Benkyoukai.Email.Services.Email;
 
 public class EmailService : IEmailService
 {

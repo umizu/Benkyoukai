@@ -1,7 +1,7 @@
-using Benkyoukai.Services.Email.Data;
-using Benkyoukai.Services.Email.Options;
-using Benkyoukai.Services.Email.Services.Common;
-using Benkyoukai.Services.Email.Services.Email;
+using Benkyoukai.Email.Data;
+using Benkyoukai.Email.Options;
+using Benkyoukai.Email.Services.Common;
+using Benkyoukai.Email.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 {

@@ -21,11 +21,9 @@ public class TokenService : ITokenService
 
     public string GenerateAccessToken(IEnumerable<Claim> claims)
     {
-        var rsaKey = RSA.Create();
-        rsaKey.ImportRSAPrivateKey(File.ReadAllBytes("key.pem"), out _);
 
-        var key = new RsaSecurityKey(rsaKey);
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Token:Secret")));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
         return new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
         {

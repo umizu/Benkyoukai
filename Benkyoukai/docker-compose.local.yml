@@ -3,10 +3,10 @@ services:
   db: 
     container_name: benkyoukai.db
     build:
-      context: ./docker/db
+      context: ./src/docker/db
       dockerfile: Dockerfile
     ports:
-      - 5432:5432
+      - 7001:5432
     environment:
       - POSTGRES_PASSWORD=benkyoukai
       - POSTGRES_USER=postgres
@@ -35,14 +35,6 @@ services:
     restart: always
     networks:
       - back-tier
-  # email:
-  #   image: study.gg.email
-  #   depends_on:
-  #     rabbitmq:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     back-tier:
 
 networks:
   back-tier:

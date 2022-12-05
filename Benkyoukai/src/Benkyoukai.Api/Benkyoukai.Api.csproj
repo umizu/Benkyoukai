@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Benkyoukai.Contracts\Benkyoukai.Contracts.csproj" />
-    <ProjectReference Include="..\Benkyoukai.Services.Contracts\Benkyoukai.Services.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Benkyoukai.Services.Contracts\Benkyoukai.Services.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

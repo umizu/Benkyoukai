@@ -1,6 +1,6 @@
 using RabbitMQ.Client;
 
-namespace Benkyoukai.Services.Email.Data;
+namespace Benkyoukai.Email.Data;
 
 public class RMQConnectionFactory : IMQConnectionFactory
 {

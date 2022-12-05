@@ -1,8 +1,8 @@
-using Benkyoukai.Services.Email.Data;
+using Benkyoukai.Email.Data;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Benkyoukai.Services.Email.Services.Common;
+namespace Benkyoukai.Email.Services.Common;
 
 public class MessageConsumer : IMessageConsumer
 {

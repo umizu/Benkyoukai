@@ -1,4 +1,4 @@
-namespace Benkyoukai.Services.Email.Options;
+namespace Benkyoukai.Email.Options;
 
 public class SmtpSettings
 {

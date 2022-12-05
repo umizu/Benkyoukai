@@ -1,7 +1,7 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Benkyoukai.Services.Email.Services.Email;
+namespace Benkyoukai.Email.Services.Email;
 
 public interface IEmailService
 {

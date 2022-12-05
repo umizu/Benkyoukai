@@ -1,6 +1,6 @@
 using RabbitMQ.Client.Events;
 
-namespace Benkyoukai.Services.Email.Services.Common;
+namespace Benkyoukai.Email.Services.Common;
 
 public interface IMessageConsumer
 {
