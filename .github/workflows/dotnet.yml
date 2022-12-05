@@ -44,7 +44,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:Benkyoukai:src"
+          context: "{{defaultContext}}:Benkyoukai/src"
           push: true
           tags: ninjaz/benkyoukai.api:dev
           
