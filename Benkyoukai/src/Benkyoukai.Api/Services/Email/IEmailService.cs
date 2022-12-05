@@ -1,5 +1,4 @@
-using Benkyoukai.Services.Contracts.Email;
-
+using Benkyoukai.Api.Dtos.Emails;
 namespace Benkyoukai.Api.Services.Email;
 
 public interface IEmailService

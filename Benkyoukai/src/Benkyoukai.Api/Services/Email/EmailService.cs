@@ -1,9 +1,5 @@
+using Benkyoukai.Api.Dtos.Emails;
 using Benkyoukai.Api.Services.Common;
-using Benkyoukai.Services.Contracts.Email;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
-using MimeKit.Text;
 
 namespace Benkyoukai.Api.Services.Email;
 

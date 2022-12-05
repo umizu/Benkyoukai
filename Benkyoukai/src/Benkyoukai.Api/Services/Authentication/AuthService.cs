@@ -2,13 +2,12 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
+using Benkyoukai.Api.Dtos.Emails;
 using Benkyoukai.Api.Extensions;
 using Benkyoukai.Api.Models;
 using Benkyoukai.Api.Repositories;
 using Benkyoukai.Api.Services.Email;
 using Benkyoukai.Contracts.Authentication;
-using Benkyoukai.Services.Contracts.Email;
-
 namespace Benkyoukai.Api.Services.Authentication;
 
 public class AuthService : IAuthService
