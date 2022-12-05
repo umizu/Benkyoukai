@@ -2,9 +2,7 @@ version: '3.4'
 services:
   db: 
     container_name: benkyoukai.db
-    build:
-      context: ./src/docker/db
-      dockerfile: Dockerfile
+    image: postgres:15.1-alpine
     ports:
       - 7001:5432
     environment:
