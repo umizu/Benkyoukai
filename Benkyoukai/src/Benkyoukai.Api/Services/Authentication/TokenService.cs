@@ -21,7 +21,7 @@ public class TokenService : ITokenService
 
     public string GenerateAccessToken(IEnumerable<Claim> claims)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Token:Secret")));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Token:Secret")!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
         return new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
@@ -41,7 +41,7 @@ public class TokenService : ITokenService
             ValidIssuer = _configuration.GetValue<string>("Token:Issuer"),
             ValidAudience = _configuration.GetValue<string>("Token:Audience"),
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Token:Secret"))),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Token:Secret")!)),
             ValidateLifetime = false
         };
 
@@ -50,7 +50,7 @@ public class TokenService : ITokenService
         try
         {
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256, StringComparison.InvariantCultureIgnoreCase))
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature, StringComparison.InvariantCultureIgnoreCase))
                 return null;
             return principal;
         }
