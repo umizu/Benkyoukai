@@ -1,4 +1,3 @@
-using System.Text;
 using Benkyoukai.Api.Services.Authentication;
 using Benkyoukai.Contracts.Authentication;
 using FluentValidation;
