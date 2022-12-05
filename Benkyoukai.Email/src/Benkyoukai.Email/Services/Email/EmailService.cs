@@ -1,6 +1,6 @@
 using System.Text;
 using System.Text.Json;
-using Benkyoukai.Services.Contracts.Email;
+using Benkyoukai.Email.Contracts;
 using Benkyoukai.Email.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;

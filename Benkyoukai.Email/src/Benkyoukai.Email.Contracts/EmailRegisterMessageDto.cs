@@ -1,4 +1,4 @@
-namespace Benkyoukai.Services.Contracts.Email;
+namespace Benkyoukai.Email.Contracts;
 
 public record EmailRegisterMessageDto(
     string Subject,

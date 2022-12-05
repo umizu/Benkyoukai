@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Benkyoukai.Services.Contracts\Benkyoukai.Services.Contracts.csproj" />
+    <ProjectReference Include="..\Benkyoukai.Email.Contracts\Benkyoukai.Email.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
