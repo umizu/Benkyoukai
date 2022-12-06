@@ -2,23 +2,25 @@ version: '3.4'
 services:
   api:
     container_name: benkyoukai.api
-    image: ninjaz/study.api
+    build:
+      context: src/
+      dockerfile: Dockerfile
     ports:
-      - "6000:6000"
+      - "7000:80"
     environment:
-      - ASPNETCORE_URLS=http://+:6000
+      - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on: 
-      - db
+      - rabbitmq
     networks:
       - front-tier
       - back-tier
     restart: on-failure
   db: 
     container_name: benkyoukai.db
-    image: ninjaz/study.db
+    image: postgres:15.1-alpine
     ports:
-      - "5432:5432"
+      - 7001:5432
     environment:
       - POSTGRES_PASSWORD=benkyoukai
       - POSTGRES_USER=postgres
@@ -28,6 +30,25 @@ services:
     networks:
       - back-tier
     restart: always
+  rabbitmq:
+    image: rabbitmq:3.11.2-management-alpine
+    hostname: rabbitmq-dev
+    container_name: rabbitmq-dev
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 15s
+      timeout: 30s
+      retries: 3
+      start_period: 15s
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    restart: always
+    networks:
+      - back-tier
 
 networks:
   front-tier:
